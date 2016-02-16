@@ -2065,6 +2065,12 @@ nemo_window_init (NemoWindow *window)
     GtkWindowGroup *window_group;
 
 	window->details = G_TYPE_INSTANCE_GET_PRIVATE (window, NEMO_TYPE_WINDOW, NemoWindowDetails);
+ 
+	GtkStyleContext *context;
+
+	context = gtk_widget_get_style_context (GTK_WIDGET (window));
+	gtk_style_context_add_class (context, "nemo-window");
+
 
 	window->details->panes = NULL;
 	window->details->active_pane = NULL;
