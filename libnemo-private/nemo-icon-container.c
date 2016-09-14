@@ -1339,6 +1339,7 @@ lay_down_icons_horizontal (NemoIconContainer *container,
 	double max_text_width, max_icon_width;
 	int icon_width;
 	int i;
+	int num_columns;
 	GtkAllocation allocation;
 
 	g_assert (NEMO_IS_ICON_CONTAINER (container));
@@ -1368,7 +1369,11 @@ lay_down_icons_horizontal (NemoIconContainer *container,
 
 		grid_width = max_icon_width + max_text_width + ICON_PAD_LEFT + ICON_PAD_RIGHT;
 	} else {
-		grid_width = STANDARD_ICON_GRID_WIDTH;
+		num_columns = floor(canvas_width / STANDARD_ICON_GRID_WIDTH);
+		num_columns = fmax(num_columns, 1);
+		/* Minimum of one column */
+		grid_width = canvas_width / num_columns - 1;
+		/* -1 prevents jitter */
 	}
 
     gridded_layout = !nemo_icon_container_is_tighter_layout (container);
@@ -4249,11 +4254,13 @@ realize (GtkWidget *widget)
 
 	container = NEMO_ICON_CONTAINER (widget);
 
+#if !GTK_CHECK_VERSION(3, 21, 0)
 	/* Ensure that the desktop window is native so the background
 	   set on it is drawn by X. */
 	if (container->details->is_desktop) {
 		gdk_x11_window_get_xid (gtk_layout_get_bin_window (GTK_LAYOUT (widget)));
 	}
+#endif
 
 	/* Set up DnD.  */
 	nemo_icon_dnd_init (container);
